@@ -12,7 +12,7 @@ Net::BufferedIO.class_eval do
     BUFSIZE = 1024 * 16
 
     def rbuf_fill
-      timeout(@read_timeout) {
+      Timeout.timeout(@read_timeout) {
         @rbuf << @io.sysread(BUFSIZE)
       }
     end
@@ -115,7 +115,7 @@ class LogStash::Outputs::Loggly < LogStash::Outputs::Base
   private
   def send_event(url, message)
     url = URI.parse(url)
-    @logger.info("Loggly URL", :url => url)
+    @logger.debug("Loggly URL", :url => url)
 
     http = Net::HTTP::Proxy(@proxy_host,
                             @proxy_port,
@@ -146,7 +146,7 @@ class LogStash::Outputs::Loggly < LogStash::Outputs::Base
 	  
 	    # HTTP_SUCCESS :Code 2xx
 	    when HTTP_SUCCESS					
-	      puts "Event send to Loggly"
+	      @logger.debug("Event send to Loggly")
 		  
 		# HTTP_FORBIDDEN :Code 403
 	    when HTTP_FORBIDDEN					
